@@ -5,6 +5,6 @@ first lab of IOT uni course
 ### progress
 
 - [ ] turn on bluetooth if it is available in device
-  - [ ] enable bluetooth
-  - [ ] make its discoverable
+  - [x] enable bluetooth
+  - [ ] Query paired devices
 - [ ] scan for other devices
