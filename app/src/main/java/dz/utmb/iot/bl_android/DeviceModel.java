@@ -12,8 +12,10 @@ public class DeviceModel {
     }
 
     public DeviceModel(BluetoothDevice bluetoothDevice) {
-        this.name = bluetoothDevice.getName();
-        this.address = bluetoothDevice.getAddress();
+        if (bluetoothDevice != null) {
+            this.name = bluetoothDevice.getName();
+            this.address = bluetoothDevice.getAddress();
+        }
     }
 
     public String getName() {

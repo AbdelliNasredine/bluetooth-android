@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -12,13 +11,51 @@
         android:orientation="vertical"
         android:padding="12dp">
 
-        <Button
-            android:id="@+id/bluetooth_btn"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Bluetooth"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <Switch
+                android:id="@+id/bt_switch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="6dp"
-            android:text="enable"
-            tools:ignore="ButtonStyle" />
+            android:layout_marginBottom="16dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Discovery"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/bt_discoverability"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="6dp"
+                android:text="enable discovery" />
+            <Button
+                android:id="@+id/bt_scan"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="scan" />
+
+        </LinearLayout>
+
 
         <LinearLayout
             android:id="@+id/paired_devices_layout"
@@ -28,10 +65,11 @@
             android:orientation="vertical">
 
             <TextView
+                android:layout_marginBottom="8dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Bleutooth Paired Devices"
-                android:textSize="18sp" />
+                android:text="Bluetooth Paired Devices"
+                android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
 
             <ListView
                 android:id="@+id/list_view"
