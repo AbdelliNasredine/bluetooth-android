@@ -32,13 +32,13 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp">
+            android:layout_marginBottom="8dp">
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Discovery"
+                android:text="Actions"
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
@@ -47,7 +47,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="6dp"
-                android:text="enable discovery" />
+                android:text="discovery" />
             <Button
                 android:id="@+id/bt_scan"
                 android:layout_width="wrap_content"
@@ -56,6 +56,30 @@
 
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:id="@+id/bt_scanMode_parent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/darker_gray"
+                />
+            <TextView
+                android:padding="16dp"
+                android:text="sdqsdqsdqd"
+                android:id="@+id/bt_scanMode_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/darker_gray"
+                />
+        </LinearLayout>
 
         <LinearLayout
             android:id="@+id/paired_devices_layout"

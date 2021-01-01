@@ -7,11 +7,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -23,7 +26,7 @@ import java.util.Set;
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
-    private static final int DISCOVERY_DURATION = 600; // 10 minutes
+    private static final int DISCOVERY_DURATION = 60; // 1 minutes
     private static final int RQ_BT_ENABLE = 1;
     private static final int RQ_BT_DISCOVERABLE = 2;
 
@@ -31,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
      * all attributes (ui widgets + utils class)
      */
     private LinearLayout pairedDevicesLinearLayout;
+    private LinearLayout scanModeParentLinearLayout;
+    private TextView scanModeTextView;
     private Button scanButton;
     private Button discoveryButton;
     private BluetoothAdapter bluetoothAdapter;
@@ -53,19 +58,27 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-//    private final BroadcastReceiver selfDiscoverableBroadcastReceiver = new BroadcastReceiver() {
-//        @Override
-//        public void onReceive(Context context, Intent intent) {
-//            if(intent.getAction().equals(BluetoothAdapter.ACTION_SCAN_MODE_CHANGED)) {
-//                String mode = intent.getStringExtra(BluetoothAdapter.EXTRA_SCAN_MODE);
-//                if(mode.equals(BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE)) {
-//
-//                }else if(mode.equals(BluetoothAdapter.SCAN_MODE_NONE)) {
-//
-//                }
-//            }
-//        }
-//    };
+    private final BroadcastReceiver selfDiscoverableBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(intent.getAction().equals(BluetoothAdapter.ACTION_SCAN_MODE_CHANGED)) {
+                int mode = intent.getIntExtra(BluetoothAdapter.EXTRA_SCAN_MODE, BluetoothAdapter.ERROR);
+                Log.i(TAG, "self discovery onReceive: in method");
+                scanModeParentLinearLayout.setVisibility(View.VISIBLE);
+                switch (mode) {
+                    case BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE:
+                        scanModeTextView.setText("Device is still in discoverable mode...");
+                        break;
+                    case BluetoothAdapter.SCAN_MODE_CONNECTABLE:
+                        scanModeTextView.setText("Device is not in discoverable mode...");
+                        break;
+                    case BluetoothAdapter.SCAN_MODE_NONE:
+                        scanModeTextView.setText("Device cannot resive connections...");
+                        break;
+                }
+            }
+        }
+    };
 
 
 
@@ -97,9 +110,14 @@ public class MainActivity extends AppCompatActivity {
         discoveryButton = (Button) findViewById(R.id.bt_discoverability);
         pairedDevicesListView = (ListView) findViewById(R.id.list_view);
         pairedDevicesLinearLayout = (LinearLayout) findViewById(R.id.paired_devices_layout);
+        scanModeParentLinearLayout = (LinearLayout) findViewById(R.id.bt_scanMode_parent);
+        scanModeTextView = (TextView) findViewById(R.id.bt_scanMode_text);
+
+        scanModeParentLinearLayout.setVisibility(View.INVISIBLE);
 
         // get bluetooth adapter object
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        bluetoothAdapter.cancelDiscovery();
 
         // setting up bluetooth switch
         bluetoothSwitch.setChecked(bluetoothAdapter.isEnabled());
@@ -121,6 +139,7 @@ public class MainActivity extends AppCompatActivity {
         // setting up discoverability button
         discoveryButton.setOnClickListener((listener) -> {
             Log.i(TAG, "setupUI: enabling self discovery for " + DISCOVERY_DURATION + " seconds");
+            scanModeParentLinearLayout.setVisibility(View.INVISIBLE);
             Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
             discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, DISCOVERY_DURATION);
             startActivityForResult(discoverableIntent, RQ_BT_DISCOVERABLE);
@@ -130,12 +149,12 @@ public class MainActivity extends AppCompatActivity {
         deviceListAdapter = new DeviceListAdapter(this, deviceModelList);
         pairedDevicesListView.setAdapter(deviceListAdapter);
 
-        // setting up intent filter for discovery / self discoverable  broadcast receiver
+        // setting up intent filter for discovery / scan mode  broadcast receiver
         IntentFilter discoveryIntentFilter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-        IntentFilter discoverableIntentFilter = new IntentFilter(BluetoothAdapter.ACTION_SCAN_MODE_CHANGED);
+        IntentFilter selfDiscoverableIntentFilter = new IntentFilter(BluetoothAdapter.ACTION_SCAN_MODE_CHANGED);
 
         registerReceiver(discoveryBroadcastReceiver, discoveryIntentFilter);
-//        registerReceiver(selfDiscoverableBroadcastReceiver, discoverableIntentFilter);
+        registerReceiver(selfDiscoverableBroadcastReceiver, selfDiscoverableIntentFilter);
     }
 
     private void enableBluetooth() {
@@ -200,6 +219,8 @@ public class MainActivity extends AppCompatActivity {
 
         // handling the result of bluetooth discoverable call
         if (requestCode == RQ_BT_DISCOVERABLE && resultCode == DISCOVERY_DURATION) {
+            scanModeParentLinearLayout.setVisibility(View.VISIBLE);
+            scanModeTextView.setText("Device is Discovering ... for " + DISCOVERY_DURATION + "seconds");
             Log.i(TAG, "onActivityResult: bluetooth is being discoverable for " + DISCOVERY_DURATION);
         }
         if (requestCode == RQ_BT_DISCOVERABLE && resultCode == RESULT_CANCELED) {
@@ -214,5 +235,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(discoveryBroadcastReceiver);
+        unregisterReceiver(selfDiscoverableBroadcastReceiver);
     }
 }

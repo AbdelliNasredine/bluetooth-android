@@ -8,4 +8,5 @@ first lab of IOT uni course
 - [x] Query paired devices
 - [x] scan for other devices (discovery)
 - [x] make device discoverable
-  - [ ] update ui according to scan mode
+  - [x] update ui according to scan mode
+- [ ] connect to other device
