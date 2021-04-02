@@ -10,12 +10,16 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 
 public class DeviceListAdapter extends BaseAdapter {
 
+    private static final String PAIRED_TXT = "PAIRED";
+
     private static class ViewHolder {
-        TextView deviceName, deviceAddress;
+        TextView deviceName, deviceAddress, deviceIsPaired;
     }
 
     Activity activity;
@@ -51,6 +55,7 @@ public class DeviceListAdapter extends BaseAdapter {
             view = layoutInflater.inflate(R.layout.device_list_row, null);
             viewHolder.deviceName = (TextView) view.findViewById(R.id.device_name);
             viewHolder.deviceAddress = (TextView) view.findViewById(R.id.device_address);
+            viewHolder.deviceIsPaired = (TextView) view.findViewById(R.id.device_is_paired);
             view.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) view.getTag();
@@ -58,6 +63,7 @@ public class DeviceListAdapter extends BaseAdapter {
         DeviceModel bluetoothDevice = bluetoothDevices.get(i);
         viewHolder.deviceName.setText(bluetoothDevice.getName());
         viewHolder.deviceAddress.setText(bluetoothDevice.getAddress());
+        viewHolder.deviceIsPaired.setText(bluetoothDevice.isPaired() ? PAIRED_TXT : "");
         return view;
     }
 }

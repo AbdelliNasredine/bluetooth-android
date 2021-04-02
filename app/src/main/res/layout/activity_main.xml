@@ -92,7 +92,7 @@
                 android:layout_marginBottom="8dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Bluetooth Paired Devices"
+                android:text="Bluetooth Devices"
                 android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
 
             <ListView

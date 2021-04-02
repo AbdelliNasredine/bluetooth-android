@@ -7,9 +7,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -23,7 +23,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.util.ArrayList;
 import java.util.Set;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
 
     private static final String TAG = "MainActivity";
     private static final int DISCOVERY_DURATION = 60; // 1 minutes
@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
     private final BroadcastReceiver discoveryBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            Log.i(TAG, "onReceive: intent taget is " + intent.getAction());
             if (intent.getAction().equals(BluetoothDevice.ACTION_FOUND)) {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 Log.i(TAG, "discovery BroadcastReceiver: found device" + device);
@@ -61,13 +62,14 @@ public class MainActivity extends AppCompatActivity {
     private final BroadcastReceiver selfDiscoverableBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            Log.i(TAG, "onReceive: intent taget is " + intent.getAction());
             if(intent.getAction().equals(BluetoothAdapter.ACTION_SCAN_MODE_CHANGED)) {
                 int mode = intent.getIntExtra(BluetoothAdapter.EXTRA_SCAN_MODE, BluetoothAdapter.ERROR);
                 Log.i(TAG, "self discovery onReceive: in method");
                 scanModeParentLinearLayout.setVisibility(View.VISIBLE);
                 switch (mode) {
                     case BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE:
-                        scanModeTextView.setText("Device is still in discoverable mode...");
+                        scanModeTextView.setText("Device is in discoverable mode...");
                         break;
                     case BluetoothAdapter.SCAN_MODE_CONNECTABLE:
                         scanModeTextView.setText("Device is not in discoverable mode...");
@@ -145,9 +147,10 @@ public class MainActivity extends AppCompatActivity {
             startActivityForResult(discoverableIntent, RQ_BT_DISCOVERABLE);
         });
 
-        // setting up ListViewAdapter
+        // setting up ListView & ListViewAdapter
         deviceListAdapter = new DeviceListAdapter(this, deviceModelList);
         pairedDevicesListView.setAdapter(deviceListAdapter);
+        pairedDevicesListView.setOnItemClickListener(this);
 
         // setting up intent filter for discovery / scan mode  broadcast receiver
         IntentFilter discoveryIntentFilter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
@@ -169,6 +172,8 @@ public class MainActivity extends AppCompatActivity {
         Log.i(TAG, "disableBluetooth: called");
         if (bluetoothAdapter.isEnabled()) {
             bluetoothAdapter.disable();
+            deviceModelList.clear();
+            deviceListAdapter.notifyDataSetChanged();
             Toast.makeText(this, "Bluetooth is OFF", Toast.LENGTH_SHORT)
                     .show();
         }
@@ -178,7 +183,7 @@ public class MainActivity extends AppCompatActivity {
         Log.i(TAG, "showPairedDevices: paired devices size " + devices.size());
         deviceModelList.clear();
         for (BluetoothDevice device : devices) {
-            deviceModelList.add(new DeviceModel(device));
+            deviceModelList.add(new DeviceModel(device, true));
         }
         deviceListAdapter.notifyDataSetChanged();
     }
@@ -236,5 +241,14 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
         unregisterReceiver(discoveryBroadcastReceiver);
         unregisterReceiver(selfDiscoverableBroadcastReceiver);
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+        // start activity here :
+        Log.i(TAG, "onItemClick: item " + i + " --- " + deviceModelList.get(i));
+        Intent comunicationIntent = new Intent(view.getContext(), CommunicationActivity.class);
+        comunicationIntent.putExtra("DEVICE", deviceModelList.get(i).getBluetoothDevice());
+        startActivity(comunicationIntent);
     }
 }

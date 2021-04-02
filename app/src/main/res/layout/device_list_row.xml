@@ -23,18 +23,32 @@
             android:orientation="vertical">
 
             <TextView
+                android:text="Redmi"
                 android:id="@+id/device_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/orange"
+                android:textColor="@color/blue"
                 android:textAppearance="@style/TextAppearance.AppCompat.Title"
                 android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/device_address"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:text="qsdqsd"
+                    android:id="@+id/device_address"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+                <TextView
+                    android:id="@+id/device_is_paired"
+                    android:paddingStart="12dp"
+                    android:textStyle="italic|bold"
+                    android:text="PAIRED"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
 
         </LinearLayout>
 
